@@ -61,7 +61,7 @@ def home():
         file = form.file.data # First grab the file
         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config['UPLOAD_FOLDER'],secure_filename(file.filename))) # Then save the file
         # print(str('static/files/'+str(file.filename)))
-        old_name =  r'static\files\{}'.format(file.filename).replace(' ','_')
+        old_name =  r'static\files\{}'.format(file.filename)#.replace(' ','_')
         new_name = r'static\files\video.mp4'
         os.rename(old_name, new_name)
         session["file_dir"] = new_name
