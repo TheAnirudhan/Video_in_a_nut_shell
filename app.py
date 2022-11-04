@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key="123"
 
 app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['UPLOAD_FOLDER'] = 'static/files'
+app.config['UPLOAD_FOLDER'] = r'static\files'
 summary=''
 file_uploaded=False
 
@@ -34,7 +34,7 @@ class UploadFileForm(FlaskForm):
 @app.route('/home', methods=['GET',"POST"])
 def home():
     form = UploadFileForm()
-    folder = 'static/files'   
+    folder = r'static/files'   
     for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)
             try:
