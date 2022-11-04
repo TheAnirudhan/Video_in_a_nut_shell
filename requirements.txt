@@ -1,8 +1,7 @@
 moviepy
-speech_recognition
-subprocess
+SpeechRecognition
 pydub
-ibm_watson
+ibm-watson
 flask
 flask_wtf
 wtforms
