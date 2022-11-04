@@ -1,0 +1,46 @@
+{%extends "base.html"%}
+{%block title%}{{current_page[1:]}}{%endblock%}\
+{%block body%}
+
+<p style="color: antiquewhite; text-align: center;">{{msg}}</p>
+<img class="center"   src={{img_src}} width="500">
+<style>
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+
+<script>
+    var request = new XMLHttpRequest();
+    var page = '{{current_page}}'
+    console.log('process-->' + '{{current_page}}')
+    request.open('POST', '{{current_page}}');
+
+    request.onload = function() {
+        var redirect_to = '{{ redirect_to }}'
+        
+        
+        if (request.status === 200 && request.responseText === 'done') {
+            // long process finished successfully, redirect user
+            console.log(redirect_to)
+            window.location = redirect_to;
+        } 
+        else {
+            // ops, we got an error from the server
+            console.log('Not OK!')
+            alert('Something went wrong.');
+        }
+    };
+
+    request.onerror = function() {
+    // ops, we got an error trying to talk to the server
+    alert('Something went wrong.');
+    };
+
+    request.send();
+</script>
+
+{%endblock%}
+

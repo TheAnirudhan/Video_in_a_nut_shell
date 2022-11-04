@@ -1,0 +1,58 @@
+{%extends "base.html"%}
+{%block title%}Home Page{%endblock%}\
+{%block body%}
+
+    
+    
+    <!-- <div class="input-group mb-3">
+        <input type="file" class="form-control" id="inputGroupFile02">
+        <label class="input-group-text" for="inputGroupFile02">Upload</label>
+    </div> -->
+
+    <div style="text-align: center">
+        <h2 style="color: rgb(255, 255, 255);"><b>Upload your video File here!</b></h2>
+        <form method='POST' enctype='multipart/form-data', style="border-top-style: hidden;">
+            
+            {{form.hidden_tag()}}
+            <label style="border: 0ch ;background: none; border-top-style: hidden;border-bottom-style: hidden;" class="form-control form-control-lg" for="inputGroupFile02">
+                {{form.file(class="btn btn-primary")}}
+                {% for err in form.file.errors %}
+                <br>
+                <p style="color: rgb(255, 255, 255);">{{err}}</p>
+                {% endfor %}
+                <br><br>
+                {{form.submit(class="btn btn-outline-light")}}
+            </label>
+            
+        </form>
+        <br><br><br><br>
+        <div class="rounded-3" style="text-align: justify; background-color: rgba(213, 253, 252, 0.803);margin-left:250px;
+        margin-right: 250px;">
+            <p style="text-align: center;margin-left: 30px; margin-right: 30px;">
+                Please make sure that you upload only a <b>video File</b> and <b>less than 500MB!</b>
+            </p>
+        </div>
+
+        
+        <script type="text/javascript">// <![CDATA[
+            function loading(){
+                $("#loading").show();
+                $("#content").hide();       
+            }
+    // ]]></script>
+        
+    </div>
+    <style>
+        div #loading {
+        width: 35px;
+        height: 35px;
+        display: none;
+        background-image: url('https://i.stack.imgur.com/FhHRx.gif') no-repeat;
+        cursor: wait;
+        }
+    </style>
+    
+
+    
+
+{%endblock%}
