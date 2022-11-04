@@ -34,7 +34,13 @@ class UploadFileForm(FlaskForm):
 @app.route('/home', methods=['GET',"POST"])
 def home():
     form = UploadFileForm()
-    folder = r'static/files'   
+
+    try:
+        os.mkdir('static/files')
+    except:
+        print('"files" already exsists!')
+
+    folder = r'static/files'
     for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)
             try:
