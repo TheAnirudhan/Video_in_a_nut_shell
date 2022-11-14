@@ -70,4 +70,4 @@ class vid_summarizer:
                         "max_length" : 350,}
         })
         # out_text = '\n'.join([i[0]['summary_text'] for i in out])
-        return out
+        return out[0]['summary_text']

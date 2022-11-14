@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, Response
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField, FileRequired, FileSize
 from wtforms import FileField, SubmitField
@@ -14,8 +14,7 @@ app.secret_key="123"
 
 app.config['SECRET_KEY'] = 'supersecretkey'
 app.config['UPLOAD_FOLDER'] = r'static\files'
-summary=''
-file_uploaded=False
+
 
 vs = vid_summarizer()
 
@@ -61,7 +60,7 @@ def home():
         file = form.file.data # First grab the file
         file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config['UPLOAD_FOLDER'],secure_filename(file.filename))) # Then save the file
         # print(str('static/files/'+str(file.filename)))
-        old_name =  r'static\files\{}'.format(file.filename)#.replace(' ','_')
+        old_name =  r'static\files\{}'.format(file.filename).replace(' ','_')
         new_name = r'static\files\video.mp4'
         os.rename(old_name, new_name)
         session["file_dir"] = new_name
@@ -77,9 +76,9 @@ def process():
     msg="Please wait converted your video to audio..."
     img_src="https://cloudinary.com/blog/wp-content/uploads/sites/12/2022/02/Mario_1.gif"
     if request.method=='GET':
-        return render_template('loading.html',session=session,msg=msg, img_src=img_src, redirect_to='/transcripting',current_page='/process')
+        return render_template('loading.html',msg=msg, img_src=img_src, redirect_to='/transcripting',current_page='/process',text=None)
     elif request.method=='POST':
-        vs.vid2aud(session.pop("file_dir"))
+        vs.vid2aud(session["file_dir"])
         return 'done'
 
 @app.route('/transcripting', methods=['GET','POST' ])
@@ -87,25 +86,42 @@ def transcripting():
     msg="Please wait Transcripting...\nThis might take a long time please wait"
     img_src='https://i0.wp.com/www.printmag.com/wp-content/uploads/2021/02/4cbe8d_f1ed2800a49649848102c68fc5a66e53mv2.gif?fit=476%2C280&ssl=1'
     if request.method=='GET':
-        return render_template('loading.html',session=session,msg=msg,img_src=img_src,redirect_to='/summarizing',current_page='/transcripting')
+        return render_template('loading.html',msg=msg,img_src=img_src,redirect_to='/summarizing',current_page='/transcripting',text=None)
     elif request.method=='POST':
         session['text'] = vs.ibm_stt()
         return 'done'
 
 @app.route('/summarizing', methods=['GET','POST' ])
 def summarizing():
-    global summary
     msg="Almost done!\nSummarizing your content..."
     img_src='https://onlinegiftools.com/images/examples-onlinegiftools/hadouken.gif'
+
     if request.method=='GET':
-        return render_template('loading.html',session=session,msg=msg,img_src=img_src,redirect_to='/summary',current_page='/summarizing')
-    elif request.method=='POST' and 'text' in session:
-        session['summary'] = vs.hft_summarizer(session.pop('text'))
+        return render_template('loading.html',msg=msg,img_src=img_src,redirect_to='/summary',current_page='/summarizing',text=session['text'])
+    elif request.method=='POST':
+        
+        session['summary'] = vs.hft_summarizer(session['text'])
         return 'done'
 
 @app.route('/summary', methods=['GET','POST' ])
 def success():
-    return render_template('result.html',summary=session.pop('summary'))
+    if request.method=='GET':
+        return render_template('result.html',summary=session['summary'])
+    elif request.method=='POST':
+        if request.form['submit_button'] == 'Download as text file':
+            return redirect(url_for('download'))
+        elif request.form['submit_button'] == 'Summarize another video':
+            session.pop('file_dir')
+            session.pop('text')
+            session.pop('summary')
+            return redirect(url_for('home'))
+
+@app.route('/download', methods=['GET','POST'])
+def download():
+    return Response(
+        session['summary'],
+        mimetype='text/plain',
+        headers={'Content-disposition': 'attachment; filename=summary.txt'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

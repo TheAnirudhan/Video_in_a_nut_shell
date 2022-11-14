@@ -3,7 +3,7 @@
 {%block body%}
 
 <p style="color: antiquewhite; text-align: center;">{{msg}}</p>
-<img class="center"   src={{img_src}} width="500">
+<img class="center"  src={{img_src}} width="500">
 <style>
 .center {
     display: block;
@@ -11,6 +11,9 @@
     margin-right: auto;
   }
 </style>
+<script>
+    console.log('{{text}}')
+</script>
 
 <script>
     var request = new XMLHttpRequest();
